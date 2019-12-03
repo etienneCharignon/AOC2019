@@ -6,6 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "eslint": "^6.7.2",
+    "expect.js": "^0.3.1",
     "mocha": "^6.2.2"
   },
   "scripts": {

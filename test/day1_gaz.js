@@ -33,7 +33,7 @@ const modules_mass=[ 77355, 115734, 59983, 106798, 71384, 112431, 87261, 98469,
 
 var assert = require('assert');
 
-describe('Gaz', function() {
+describe('day1: Gaz', function() {
   it('computeModule should return (mass/3) -2', function() {
     assert.equal(computeModule(12), 2);
   });

@@ -4,29 +4,44 @@ var assert = require('assert');
 
 function compute (code) {
   for(var i=0; i < code.length; i++) {
-    if(code[i] == 99) {
+    const opCode = code[i];
+    if(opCode == 99) {
       return code;
     }
-    var addr1 = code[i+1];
-    var addr2 = code[i+2];
-    var addr3 = code[i+3];
+    const addr1 = code[i+1];
+    const addr2 = code[i+2];
+    const addr3 = code[i+3];
 
-    if(code[i] == 1) { // addition
-      var sum = code[addr1] + code[addr2];
+    if(opCode == 1) { // addition
+      const sum = code[addr1] + code[addr2];
       code[addr3] = sum;
     }
-    else if(code[i] == 2) { // addition
-      var product = code[addr1] * code[addr2];
+    else if(opCode == 2) { // Multiplication
+      const product = code[addr1] * code[addr2];
       code[addr3] = product;
     }
     i += 3;
   }
 }
 
-describe('computer', function() {
-  before (function () {
-    programme[1] = 12;
-    programme[2] = 2;
+function findNounAndVerbe (code, target) {
+  for(var noun = 0; noun <= 99; noun++) {
+    code[1] = noun;
+    for(var verbe = 0; verbe <= 99; verbe++) {
+      code[2] = verbe;
+      const result = compute([...code]);
+      if(result[0] == target) return result;
+    }
+  }
+}
+
+describe('day2: computer', function() {
+  var workspace;
+
+  beforeEach (function () {
+    workspace = [...programme];
+    workspace[1] = 12;
+    workspace[2] = 2;
   });
 
   it('terminate with 99', function () {
@@ -49,6 +64,16 @@ describe('computer', function() {
   });
 
   it('compute THE program', function () {
-    assert.equal(compute(programme)[0],  3562672);
+    assert.equal(compute(workspace)[0],  3562672);
+  });
+
+  it('find noun and verbe for 3562672', function () {
+    const [, noun, verbe] = findNounAndVerbe(workspace, 3562672);
+    assert.equal(100*noun + verbe, 1202);
+  });
+
+  it('find noun and verbe for 19690720', function () {
+    const [, noun, verbe] = findNounAndVerbe(workspace, 19690720);
+    assert.equal(100*noun + verbe, 8250);
   });
 });

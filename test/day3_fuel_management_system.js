@@ -7,7 +7,7 @@ const {
   closest
 } = require('../fuel_management_system.js');
 
-describe.only('day3: fuel management system', function() {
+describe('day3: fuel management system', function() {
   it('compute all positions to the right plus steps', function() {
     expect(collectPoints('R1')).to.eql([{x:1,y:0, steps:1}]);
     expect(collectPoints('R2')).to.eql([{x:1,y:0, steps:1}, {x:2,y:0, steps:2}]);

@@ -20,11 +20,11 @@ describe.only('day5: computer', function() {
     expect(compute([99])).to.eql([99]);
   });
 
-  it('add two numbers with 1', function () {
+  it('1: add two numbers', function () {
     expect(compute([1, 0, 0, 0, 99])).to.eql([2, 0, 0, 0, 99]);
   });
 
-  it('multiply two numbers with 1', function () {
+  it('2: multiply two numbers', function () {
     expect(compute([2, 1, 0, 0, 99])).to.eql([2, 1, 0, 0, 99]);
   });
 
@@ -35,13 +35,13 @@ describe.only('day5: computer', function() {
     expect(compute([1,1,1,4,99,5,6,0,99])).to.eql([30,1,1,4,2,5,6,0,99]);
   });
 
-  it('take a single integer as input', function () {
+  it('3: take a single integer as input', function () {
     const result = compute([3,0,99], { read:() => '1\n'});
     expect(result).to.eql([1,0,99]);
     expect(result[0]).to.equal(1);
   });
 
-  it('write a single integer as output', function () {
+  it('4: write a single integer as output', function () {
     compute([4,0,99], nullInput, mockStdout);
     expect(mockStdout.output).to.equal('4\n');
     compute([104,999,99], nullInput, mockStdout);
@@ -66,7 +66,7 @@ describe.only('day5: computer', function() {
     expect(compute([1002,4,3,4,33])).to.eql([1002,4,3,4,99]);
   });
 
-  it('jump if true jump if true', function () {
+  it('5: jump if true jump if true', function () {
     compute([1105,1,4,99,104,42,99], nullInput, mockStdout);
     expect(mockStdout.output).to.equal('42\n');
   });
@@ -89,12 +89,23 @@ describe.only('day5: computer', function() {
     expect(mockStdout.output).to.equal(undefined);
   });
 
-  it('jump if false jump if false', function () {
+  it('6: jump if false jump if false', function () {
     compute([1106,0,4,99,104,42,99], nullInput, mockStdout);
     expect(mockStdout.output).to.equal('42\n');
   });
 
-  it('equal set 1 if equal', function () {
+  it('7: compare less than', function () {
+    compute([1107,7,8,7,4,7,99,-1], nullInput, mockStdout);
+    expect(mockStdout.output).to.equal('1\n');
+    mockStdout.output = -1;
+    compute([1107,8,8,7,4,7,99,-1], nullInput, mockStdout);
+    expect(mockStdout.output).to.equal('0\n');
+    mockStdout.output = -1;
+    compute([1107,9,8,7,4,7,99,-1], nullInput, mockStdout);
+    expect(mockStdout.output).to.equal('0\n');
+  });
+
+  it('8: equal set 1 if equal', function () {
     compute([1108,8,8,7,4,7,99,-1], nullInput, mockStdout);
     expect(mockStdout.output).to.equal('1\n');
   });
@@ -107,16 +118,5 @@ describe.only('day5: computer', function() {
   it('equal in position mode', function () {
     compute([8,8,9,7,4,7,99,-1, 8, 8], nullInput, mockStdout);
     expect(mockStdout.output).to.equal('1\n');
-  });
-
-  it('compare less than', function () {
-    compute([1107,7,8,7,4,7,99,-1], nullInput, mockStdout);
-    expect(mockStdout.output).to.equal('1\n');
-    mockStdout.output = -1;
-    compute([1107,8,8,7,4,7,99,-1], nullInput, mockStdout);
-    expect(mockStdout.output).to.equal('0\n');
-    mockStdout.output = -1;
-    compute([1107,9,8,7,4,7,99,-1], nullInput, mockStdout);
-    expect(mockStdout.output).to.equal('0\n');
   });
 });

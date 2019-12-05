@@ -74,7 +74,7 @@ function compute (memory, stdin, stdout) {
         else i+=2;
         break;
       }
-      case 7: {
+      case 7: { // less than
         const param2 = memory[i+2];
         const param3 = memory[i+3];
         ligne += ` ${param2} ${param3} `;
@@ -82,7 +82,7 @@ function compute (memory, stdin, stdout) {
         i+=3;
         break;
       }
-      case 8: {
+      case 8: { // equal
         const param2 = memory[i+2];
         const param3 = memory[i+3];
         ligne += ` ${param2} ${param3} `;

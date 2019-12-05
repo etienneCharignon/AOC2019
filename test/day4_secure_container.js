@@ -3,7 +3,7 @@ const {
   count_passwords
 } = require('../secure_container.js');
 
-describe.only('Day4: Secure container', function () {
+describe('Day4: Secure container', function () {
 
   it('count the number of occurences in the range full of password', function () {
     expect(count_passwords([123556,123557])).to.be(2);

@@ -11,44 +11,91 @@ function decomposeOpCode (opCode) {
   }
 }
 
-function getValue(code, param, mode) {
-  return mode == 1 ? param : code[param];
+function getValue(memory, param, mode) {
+  return mode == 1 ? param : memory[param];
 }
 
-function compute (code, stdin, stdout) {
-  for(var i=0; i < code.length; i++) {
-    const opCode = code[i];
+function exec(memory, parametersModes, i, f) {
+  const value1 = getValue(memory, memory[i+1], parametersModes[0])
+  const value2 = getValue(memory, memory[i+2], parametersModes[1]);
+  const param3 = memory[i+3];
+
+  memory[param3] = f(value1, value2) ? 1 : 0;
+}
+
+function compute (memory, stdin, stdout) {
+  for(var i=0; i < memory.length; i++) {
+    const opCode = memory[i];
+    var ligne = `${i}: ${opCode}`;
     const { instruction, parametersModes } = decomposeOpCode(opCode);
 
     if(instruction == 99) {
-      return code;
+      return memory;
     }
-    const param1 = code[i+1];
+    const param1 = memory[i+1];
+    ligne += ` ${param1}`;
 
-    if(instruction == 1) { // addition
-      const param2 = code[i+2];
-      const param3 = code[i+3];
-      const sum = getValue(code, param1, parametersModes[0])
-        + getValue(code, param2, parametersModes[1]);
-      code[param3] = sum;
-      i += 2;
+    switch (instruction) {
+      case 1: { // addition
+        const param2 = memory[i+2];
+        const param3 = memory[i+3];
+        ligne += ` ${param2} ${param3} `;
+        const sum = getValue(memory, param1, parametersModes[0])
+          + getValue(memory, param2, parametersModes[1]);
+        memory[param3] = sum;
+        i += 3;
+        break;
+      }
+      case 2: {// Multiplication
+        const param2 = memory[i+2];
+        const param3 = memory[i+3];
+        ligne += ` ${param2} ${param3} `;
+        const product = getValue(memory, param1, parametersModes[0])
+          * getValue(memory, param2, parametersModes[1]);
+        memory[param3] = product;
+        i += 3;
+        break;
+      }
+      case 3: // read input
+        memory[param1] = parseInt(stdin.read());
+        i+=1;
+        break;
+      case 4: // write output
+        stdout.write(getValue(memory, param1, parametersModes[0]) + '\n');
+        i+=1;
+        break;
+      case 5: // jump if true
+      case 6: { // jump if false
+        const param2 = memory[i+2];
+        ligne += ` ${param2} `;
+        const value1 = getValue(memory, param1, parametersModes[0]);
+        const value2 = getValue(memory, param2, parametersModes[1]);
+        if((value1 !== 0 ) == (instruction == 5)) i = value2 - 1;
+        else i+=2;
+        break;
+      }
+      case 7: {
+        const param2 = memory[i+2];
+        const param3 = memory[i+3];
+        ligne += ` ${param2} ${param3} `;
+        exec(memory, parametersModes, i, (v1, v2) => (v1 < v2));
+        i+=3;
+        break;
+      }
+      case 8: {
+        const param2 = memory[i+2];
+        const param3 = memory[i+3];
+        ligne += ` ${param2} ${param3} `;
+        exec(memory, parametersModes, i, (v1, v2) => (v1 == v2));
+        i+=3;
+        break;
+      }
     }
-    else if(instruction == 2) { // Multiplication
-      const param2 = code[i+2];
-      const param3 = code[i+3];
-      const product = getValue(code, param1, parametersModes[0])
-        * getValue(code, param2, parametersModes[1]);
-      code[param3] = product;
-      i += 2;
-    }
-    else if(instruction == 3) { // read input
-      code[param1] = parseInt(stdin.read());
-    }
-    else if(instruction == 4) { // write output
-      stdout.write(getValue(code, param1, parametersModes[0]) + '\n');
-    }
-    i+=1;
+
+    const debug= false;
+    if (debug) console.log(ligne);
   }
+
 }
 
 module.exports = {

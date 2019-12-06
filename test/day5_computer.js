@@ -7,7 +7,7 @@ class MockStdout {
   }
 }
 
-describe.only('day5: computer', function() {
+describe('day5: computer', function() {
 
   const nullInput = { read:()=>{}};
   let mockStdout;

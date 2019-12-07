@@ -2,7 +2,7 @@ const expect = require('expect.js');
 const {countOrbits, countAllOrbits, findAllOrbits, numberOfOrbitalTransfert} = require('../universal_orbit_map');
 const puzzleInput = require('../uom_puzzle_input.js').map;
 
-describe.only('day 6: universal orbit map', function () {
+describe('day 6: universal orbit map', function () {
   it('count B direct orbit', function () {
     expect(countOrbits(['COM)B']).B).to.be(1);
     expect(countOrbits(['COM)B', 'COM)C']).B).to.be(1);
@@ -59,7 +59,7 @@ K)YOU
 I)SAN`, 'YOU', 'SAN')).to.be(4);
   });
 
-  it('count numver of orbital transfert in puzzle input', function () {
+  it('count nummer of orbital transfert in puzzle input', function () {
     expect(numberOfOrbitalTransfert(puzzleInput, 'YOU', 'SAN')).to.be(382);
   });
 });

@@ -1,3 +1,5 @@
+const { isMainThread, workerData, parentPort } = require('worker_threads');
+
 function decomposeOpCode (opCode) {
   const C = Math.floor(opCode/100);
   const B = Math.floor(opCode/1000);
@@ -23,13 +25,22 @@ function exec(memory, parametersModes, i, f) {
   memory[param3] = f(value1, value2) ? 1 : 0;
 }
 
-function compute (memory, stdin, stdout) {
+function readInput(stdin) {
+  return new Promise(resolve => stdin.on('data', (data) => {
+    resolve(parseInt(data));
+  }));
+}
+
+async function compute (memory, stdin, stdout) {
   for(var i=0; i < memory.length; i++) {
     const opCode = memory[i];
     var ligne = `${i}: ${opCode}`;
     const { instruction, parametersModes } = decomposeOpCode(opCode);
 
     if(instruction == 99) {
+      if (!isMainThread) {
+        parentPort.postMessage(memory);
+      }
       return memory;
     }
     const param1 = memory[i+1];
@@ -56,10 +67,12 @@ function compute (memory, stdin, stdout) {
         i += 3;
         break;
       }
-      case 3: // read input
-        memory[param1] = parseInt(stdin.read());
+      case 3: {// read input
+        const answer = await readInput(stdin);
+        memory[param1] = (answer);
         i+=1;
         break;
+      }
       case 4: // write output
         stdout.write(getValue(memory, param1, parametersModes[0]) + '\n');
         i+=1;
@@ -98,7 +111,15 @@ function compute (memory, stdin, stdout) {
 
 }
 
-module.exports = {
-  compute,
-  decomposeOpCode
+if (isMainThread) {
+  module.exports = {
+    compute,
+    decomposeOpCode
+  }
 }
+else {
+  process.stdin.setEncoding('utf8');
+  process.stdin.setMaxListeners(20);
+  compute(workerData, process.stdin, process.stdout);
+}
+

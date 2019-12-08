@@ -1,4 +1,5 @@
 var expect = require('expect.js');
+const { Worker } = require('worker_threads');
 const { compute, decomposeOpCode } = require('../computer.js');
 
 class MockStdout {
@@ -17,36 +18,98 @@ describe('day5: computer', function() {
   });
 
   it('terminate with 99', function () {
-    expect(compute([99])).to.eql([99]);
+    return Promise.resolve(compute([99])).then((output) => {
+      expect(output).to.eql([99]);
+    });
   });
 
   it('1: add two numbers', function () {
-    expect(compute([1, 0, 0, 0, 99])).to.eql([2, 0, 0, 0, 99]);
+    return Promise.resolve(compute([1,0,0,0,99])).then((output) => {
+      expect(output).to.eql([2,0,0,0, 99]);
+    });
   });
 
   it('2: multiply two numbers', function () {
-    expect(compute([2, 1, 0, 0, 99])).to.eql([2, 1, 0, 0, 99]);
+    return Promise.resolve(compute([2, 1, 0, 0, 99])).then((output) => {
+      expect(output).to.eql([2, 1, 0, 0, 99]);
+    });
   });
 
   it('computes divers programmes', function () {
-    expect(compute([1,0,0,0,99])).to.eql([2,0,0,0,99]);
-    expect(compute([2,3,0,3,99])).to.eql([2,3,0,6,99]);
-    expect(compute([2,4,4,5,99,0])).to.eql([2,4,4,5,99,9801]);
-    expect(compute([1,1,1,4,99,5,6,0,99])).to.eql([30,1,1,4,2,5,6,0,99]);
+    return Promise.all([
+      compute([2, 1, 0, 0, 99]),
+      compute([1,0,0,0,99]),
+      compute([2,3,0,3,99]),
+      compute([2,4,4,5,99,0]),
+      compute([1,1,1,4,99,5,6,0,99])
+    ]).then((outputs) => {
+      expect(outputs[0]).to.eql([2,1,0,0,99]);
+      expect(outputs[1]).to.eql([2,0,0,0,99]);
+      expect(outputs[2]).to.eql([2,3,0,6,99]);
+      expect(outputs[3]).to.eql([2,4,4,5,99,9801]);
+      expect(outputs[4]).to.eql([30,1,1,4,2,5,6,0,99]);
+    });
   });
 
-  it('3: take a single integer as input', function () {
-    const result = compute([3,0,99], { read:() => '1\n'});
-    expect(result).to.eql([1,0,99]);
-    expect(result[0]).to.equal(1);
+  it('3: take a single integer as input', function (done) {
+    const worker = new Worker('./computer.js', {
+      workerData: [3,0,3,1,99],
+      stdin: true,
+      stdout: true
+    });
+    worker.stdin.write('10000\n');
+    worker.stdin.write('12\n');
+    worker.on('message', (result) => {
+      expect(result).to.eql([10000,12,3,1,99]);
+      expect(result[0]).to.equal(10000);
+      done();
+    });
   });
 
-  it('4: write a single integer as output', function () {
-    compute([4,0,99], nullInput, mockStdout);
-    expect(mockStdout.output).to.equal('4\n');
-    compute([104,999,99], nullInput, mockStdout);
-    expect(mockStdout.output).to.equal('999\n');
+  it('4: write a single integer as output', function (done) {
+    const worker = new Worker('./computer.js', {
+      workerData: [4,0,99],
+      stdin: true,
+      stdout: true
+    });
+    worker.stdout.setEncoding('utf8');
+    worker.on('message', () => {
+      expect(worker.stdout.read()).to.equal('4\n');
+      done();
+    });
+  });
 
+  it('4: write a single integer as output in immediate mode', function (done) {
+    const worker = new Worker('./computer.js', {
+      workerData: [104,999,99],
+      stdin: true,
+      stdout: true
+    });
+    worker.stdout.setEncoding('utf8');
+    worker.on('message', () => {
+      expect(worker.stdout.read()).to.equal('999\n');
+      done();
+    });
+  });
+
+  it('pipes two workers', function (done) {
+    const outWorker = new Worker('./computer.js', {
+      workerData: [3,5,4,5,99,0],
+      stdin: true,
+      stdout: true
+    });
+    const inWorker = new Worker('./computer.js', {
+      workerData: [3,0,99],
+      stdin: true,
+      stdout: true
+    });
+    outWorker.stdout.pipe(inWorker.stdin);
+    outWorker.stdin.write('1234\n');
+    inWorker.on('message', (resultCode) => {
+      expect(resultCode).to.eql([1234, 0, 99]);
+      expect(resultCode[0]).to.equal(1234);
+      done();
+    });
   });
 
   it('extract insctruction from opCode', function () {
@@ -63,7 +126,9 @@ describe('day5: computer', function() {
   });
 
   it('have a immediate mode for values', function () {
-    expect(compute([1002,4,3,4,33])).to.eql([1002,4,3,4,99]);
+    return Promise.resolve(compute([1002,4,3,4,33])).then((output) => {
+      expect(output).to.eql([1002,4,3,4,99]);
+    });
   });
 
   it('5: jump if true jump if true', function () {

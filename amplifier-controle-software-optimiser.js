@@ -1,11 +1,35 @@
-const { compute } = require('./computer.js');
+const { Worker } = require('worker_threads');
 
-function chaine (settingsSequence, code, stdin, stdout) {
-  for(var i = 0; i < settingsSequence.length; i++) {
-    const input = i == 0 ? 0 : parseInt(stdout.output);
-    stdin.newInputs([settingsSequence[i],input]);
-    compute(code.slice(), stdin, stdout);
-  }
+function chaine (settingsSequence, code, feedbackloop) {
+  return new Promise((resolve) => {
+    const workers = [];
+    for(var i = 0; i < settingsSequence.length; i++) {
+      const worker = new Worker('./computer.js', {
+        workerData: code,
+        stdin: true,
+        stdout: true
+      });
+      workers.push(worker);
+      worker.stdin.write(`${settingsSequence[i]}\n`);
+      worker.stdout.setEncoding('utf8');
+      // worker.on('message', (message) => {
+      //   console.log(message);
+      // });
+    }
+    for(var w = 1; w < workers.length; w++) {
+      workers[w-1].stdout.pipe(workers[w].stdin);
+    }
+    const lastWorker = workers[workers.length-1]
+    if(feedbackloop) lastWorker.stdout.pipe(workers[0].stdin);
+    const lastWorkerOutputs = [];
+    lastWorker.stdout.on('data', (data) => {
+      lastWorkerOutputs.push(data);
+    });
+    workers[0].stdin.write('0\n');
+    lastWorker.on('message', () => {
+      resolve(lastWorkerOutputs.pop());
+    });
+  });
 }
 
 function generate(initialSequence) {
@@ -23,14 +47,13 @@ function generate(initialSequence) {
   return sequences;
 }
 
-function allOutputs (sequenceInitial, code, stdIn, stdOut) {
+function allOutputs (sequenceInitial, code, feedbackloop) {
   const allSequences = generate(sequenceInitial);
-  const outputs = {};
+  const chaines = [];
   allSequences.forEach(sequence => {
-    chaine(sequence, code, stdIn, stdOut);
-    outputs[parseInt(stdOut.output)] = sequence;
+    chaines.push(chaine(sequence, code, feedbackloop));
   });
-  return outputs;
+  return Promise.all(chaines);
 }
 
 module.exports = {

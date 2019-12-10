@@ -51,24 +51,40 @@ function hasBetween(a1, a2, asteroids) {
   return false;
 }
 
-function countInSight(asteroids, asteroid) {
-  var count = 0;
+function collectInSight(asteroids, asteroid) {
+  const inSight = [];
   asteroids.forEach(otherAsteroid => {
     if(hasBetween(otherAsteroid, asteroid, asteroids)) {
       return;
     }
-    count++;
+    inSight.push(otherAsteroid);
   });
-  return count;
+  return inSight;
 }
 
 function allInsigths(asteroids) {
-  return asteroids.map(a => countInSight(asteroids, a));
+  return asteroids.map(a => collectInSight(asteroids, a));
+}
+
+function computeAngle(origin, point) {
+  const angle = Math.atan2(point.y - origin.y, point.x - origin.x) * 180 / Math.PI + 90;
+  if(angle < 0) return angle + 360;
+  return angle;
+}
+
+function mapByAngle(asteroids, o) {
+  const map = {};
+  asteroids.forEach(a => {
+    map[computeAngle(o, a)] = a;
+  });
+  return map;
 }
 
 module.exports = {
   isBetween,
   coordinates,
-  countInSight,
-  allInsigths
+  collectInSight,
+  allInsigths,
+  mapByAngle,
+  computeAngle
 }

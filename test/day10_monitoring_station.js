@@ -6,7 +6,7 @@ const {
 } = require('../monitoring_station');
 const puzzleInput = require('../day10-asteroids_field');
 
-describe.only('day 10: monitoring station', function () {
+describe('day 10: monitoring station', function () {
   it('know if c is between a and b', function () {
     expect(isBetween({x:0,y:0}, {x:6,y:2}, {x:3,y:1})).to.eql(true);
   });

@@ -1,36 +1,40 @@
 const expect = require('expect.js');
 const { paint, moveAndReadColor } = require('../day11-robot');
 
-describe.only('day 11: emergency hull painting robot', function () {
+describe('day 11: emergency hull painting robot', function () {
   it('runs one first step', function () {
     return paint(1).then((output) => {
-      expect(output).to.eql([[1,0]]);
+      expect(output).to.eql([[0,1]]);
     });
   });
 
   it('runs two steps', function () {
     return paint(2).then((output) => {
-      expect(output).to.eql([[1,0],[1,1]]);
+      expect(output).to.eql([[0,1],[1,1]]);
     });
   });
 
-  it.only('runs to the end and return the painted cells', function () {
-    this.timeout(30000);
+  it('runs to the end and return the painted cells', function () {
+    this.timeout(20000);
     return paint(2000).then((paintedCells) => {
-      expect(Object.keys(paintedCells).length).to.eql(249);
+      const keys = Object.keys(paintedCells);
+      expect(keys.length).to.eql(249);
+
       const screen = [];
-      Object.keys(paintedCells).forEach(cell => {
+      keys.forEach(cell => {
         const position = cell.split(',');
-        const row = screen[position[0]];
+        const y = parseInt(position[1]) + 5;
+        const x = position[0];
+        const row = screen[x];
         if(!row) {
-          screen[position[0]] = [];
+          screen[x] = [];
         }
-        screen[position[0]][-position[1]] = paintedCells[cell] == 1 ? 'X' : ' ';
+        screen[x][y] = paintedCells[cell] == 1 ? 'X' : ' ';
       });
 
-      // screen.forEach(row => {
-      //   console.log(row.join(''));
-      // });
+      screen.forEach(row => {
+        console.log(row.join(''));
+      });
     });
   });
 

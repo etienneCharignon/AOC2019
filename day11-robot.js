@@ -33,7 +33,7 @@ function moveAndReadColor(world, step) {
   return color == undefined ? 0 : color;
 }
 
-function paint () {
+function paint (numberOfSteps) {
   return new Promise((resolve) => {
     const worker = new Worker('./computer.js', {
       workerData: robotBrain,
@@ -57,10 +57,10 @@ function paint () {
         //console.log(oneStepOutput.pair);
         steps.push(oneStepOutput.pair);
 
-        //if(false && steps.length == numberOfSteps) {
-        //  worker.terminate()
-        //  resolve(steps);
-        //}
+        if(steps.length == numberOfSteps) {
+          worker.terminate()
+          resolve(steps);
+        }
         const colorPanel = moveAndReadColor(world, oneStepOutput.pair);
         oneStepOutput.pair = [];
         worker.stdin.write(`${colorPanel}\n`);

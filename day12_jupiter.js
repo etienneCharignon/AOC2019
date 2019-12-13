@@ -1,5 +1,5 @@
 function computeVelocity (moons) {
-  ['x', 'y', 'z'].forEach(axe => {
+  ['z'].forEach(axe => {
     moons =  moons.map((moon1, i1) => {
       moons.forEach((moon2, i2) => {
         if(i1 == i2) return;
@@ -18,7 +18,7 @@ function computeVelocity (moons) {
 }
 
 function applyVelocity (moons) {
-  ['x', 'y', 'z'].forEach(axe => {
+  ['z'].forEach(axe => {
     moons =  moons.map(moon => {
       moon.pos[axe] += moon.v[axe];
       return moon
@@ -40,8 +40,19 @@ function computeEnergie (moons) {
   }, 0);
 }
 
+function compare(newWorld, origin) {
+  for(var m = 0; m<newWorld.length; m++){
+    if(!['x', 'y', 'z'].every(axe => {
+      return newWorld[m].v[axe] == 0 &&
+        newWorld[m].pos[axe] == origin[m].pos[axe];
+    })) return false;
+  }
+  return true;
+}
+
 module.exports = {
   computeVelocity,
   applyVelocity,
-  computeEnergie
+  computeEnergie,
+  compare
 };

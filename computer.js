@@ -142,7 +142,7 @@ if (isMainThread) {
 }
 else {
   process.stdin.setEncoding('utf8');
-  process.stdin.setMaxListeners(20);
+  process.stdin.setMaxListeners(1000);
   compute(workerData, process.stdin, process.stdout);
 }
 

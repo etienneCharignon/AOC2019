@@ -5,7 +5,7 @@ const { computeVelocity,
   compare
 } = require('../day12_jupiter');
 
-describe.only('day 12 Jupiter N-body probleme', function () {
+describe('day 12 Jupiter N-body probleme', function () {
   it('compute velocity on one axes', function () {
     const moons = computeVelocity([
       {pos: {x: -1}, v:{ x:0}},
@@ -100,7 +100,7 @@ describe.only('day 12 Jupiter N-body probleme', function () {
     expect(step).to.eql(2772);
   });
 
-  it.only('runs until on the puzzle input', function () {
+  it('runs until on the puzzle input', function () {
     this.timeout(2000);
     var puzzleInput = [
       {pos: {x: -10, y:-13, z:7}, v:{ x:0, y:0, z:0}},
@@ -119,7 +119,6 @@ describe.only('day 12 Jupiter N-body probleme', function () {
     for(; !equals; step++) {
       world = applyVelocity(computeVelocity(world));
       equals = compare(world, puzzleInput);
-      console.log(step);
     }
     expect(step).to.eql(2772);
     // x: 186028

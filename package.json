@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "gaz.js",
-  "dependencies": {},
+  "dependencies": {
+    "npm": "^6.13.4"
+  },
   "devDependencies": {
     "eslint": "^6.7.2",
     "expect.js": "^0.3.1",

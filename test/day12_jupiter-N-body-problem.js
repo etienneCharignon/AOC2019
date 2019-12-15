@@ -6,7 +6,7 @@ const { computeVelocity,
 } = require('../day12_jupiter');
 
 describe('day 12 Jupiter N-body probleme', function () {
-  it('compute velocity on one axes', function () {
+  xit('compute velocity on one axes', function () {
     const moons = computeVelocity([
       {pos: {x: -1}, v:{ x:0}},
       {pos: {x: 2}, v:{ x:0}},
@@ -19,7 +19,7 @@ describe('day 12 Jupiter N-body probleme', function () {
     expect(moons[3].v.x).to.eql(1);
   });
 
-  it('compute velocity on other axes', function () {
+  xit('compute velocity on other axes', function () {
     const moons = computeVelocity([
       {pos: {y: 0, z:1}, v:{ y:0, z:0}},
       {pos: {y: 1, z:0}, v:{ y:0, z:0}}
@@ -30,7 +30,7 @@ describe('day 12 Jupiter N-body probleme', function () {
     expect(moons[1].v.z).to.eql(1);
   });
 
-  it('apply velocity', function () {
+  xit('apply velocity', function () {
     const moons = applyVelocity([
       {pos: {x: -1}, v:{ x:1}},
       {pos: {x: 2}, v:{ x:-1}},
@@ -48,7 +48,7 @@ describe('day 12 Jupiter N-body probleme', function () {
     expect(computeEnergie(moons)).to.eql(36);
   });
 
-  it('compute total system energie of the puzzle input', function () {
+  xit('compute total system energie of the puzzle input', function () {
     var puzzleInput = [
       {pos: {x: -10, y:-13, z:7}, v:{ x:0, y:0, z:0}},
       {pos: {x: 1, y:2, z:1}, v:{ x:0, y:0, z:0}},
@@ -77,7 +77,7 @@ describe('day 12 Jupiter N-body probleme', function () {
     expect(compare(moons, moons2)).to.be(false);
   });
 
-  it('runs until it returns to origin', function () {
+  xit('runs until it returns to origin', function () {
     const example_1 = [
       {pos: {x: -1, y:0, z:2}, v:{ x:0, y:0, z:0}},
       {pos: {x: 2, y:-10, z:-7}, v:{ x:0, y:0, z:0}},
@@ -100,7 +100,7 @@ describe('day 12 Jupiter N-body probleme', function () {
     expect(step).to.eql(2772);
   });
 
-  it('runs until on the puzzle input', function () {
+  xit('runs until on the puzzle input', function () {
     this.timeout(2000);
     var puzzleInput = [
       {pos: {x: -10, y:-13, z:7}, v:{ x:0, y:0, z:0}},

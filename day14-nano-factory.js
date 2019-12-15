@@ -4,19 +4,26 @@ class ProductionUnit {
     this.batch = batch;
     this.inputs = inputs;
     this.count = 0;
+    this.composants = {};
+    this.inputs.split(', ').forEach(composant => {
+      const [q, product] = composant.split(' ');
+      this.composants[product] = parseInt(q);
+    });
   }
 
   produce (quantity) {
-    for(var i = 0; i < quantity; i++) {
-      if(this.count == 0) {
-        this.inputs.split(', ').forEach(composant => {
-	    const [q, product] = composant.split(' ');
-	    this.map[product].produce(parseInt(q));
-	});
-	this.count += this.batch;
-      }
-      this.count--;
+    var toProduce = quantity;
+    if(this.count >= toProduce) {
+      this.count -= toProduce;
+      return;
     }
+    toProduce -= this.count;
+    const numberOfBatch = Math.ceil(toProduce / this.batch);
+    Object.keys(this.composants).forEach(product => {
+      const q = this.composants[product];
+      this.map[product].produce(q * numberOfBatch);
+    });
+    this.count = numberOfBatch * this.batch - toProduce;
   }
 }
 
@@ -47,10 +54,35 @@ function read(input) {
 
 function countOreToMakeOneFuel (map) {
   map.FUEL.produce(1);
+ // Object.keys(map).forEach(product => {
+ //   console.log(product + " : " + map[product].count);
+ // });
   return map.ORE.count;
+}
+
+function howManyFuel (rulls) {
+
+  var from = 460664;
+  var to = 5586022;
+  while(to - from > 1) {
+    const m = Math.floor((to + from)/2);
+    //console.log(to, from, m);
+    const map = read(rulls);
+    map.FUEL.produce(m);
+    //console.log(map.ORE.count);
+    if (map.ORE.count <= 1000000000000) {
+      from = m;
+    }
+    else {
+      //console.log(`${e} : can't produce ${m} fuel`);
+      to = m;
+    }
+  }
+  return from;
 }
 
 module.exports = {
   read,
   countOreToMakeOneFuel,
+  howManyFuel
 }

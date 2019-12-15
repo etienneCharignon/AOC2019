@@ -2,6 +2,7 @@ const expect = require('expect.js');
 const {
   read,
   countOreToMakeOneFuel,
+	howManyFuel
 } = require('../day14-nano-factory');
 const puzzleInput = require('../day14-factory-rulls');
 
@@ -23,7 +24,7 @@ const example3 = `157 ORE => 5 NZVS
 165 ORE => 2 GPVTF
 3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT`;
 
-describe.only('day 14: Space Stoichiometry', function () {
+describe('day 14: Space Stoichiometry', function () {
   it('can read the input map', function () {
     const structuredInput = read(firstVerySimpleExample);
     expect(structuredInput.A.batch).to.equal(10);
@@ -85,5 +86,9 @@ describe.only('day 14: Space Stoichiometry', function () {
   it('count the ORE for the puzzleInput', function () {
     const input = read(puzzleInput);
     expect(countOreToMakeOneFuel(input)).to.equal(443537);
+  });
+
+  it('count the Fuel for 1 trillion ORE', function () {
+    expect(howManyFuel(puzzleInput)).to.equal(2910558);
   });
 });

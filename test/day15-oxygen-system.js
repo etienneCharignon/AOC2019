@@ -2,7 +2,7 @@ const expect = require('expect.js');
 const repaireDroid = require('../day15-repaire-droid');
 const { moveDroid, Maze } = require('../day15-find-oxygen-system');
 
-describe.only('Day 15: oxygen system', function () {
+describe('Day 15: oxygen system', function () {
   it('move droid one step', function () {
     return moveDroid(repaireDroid, 1).then((report) => {
       expect(report).to.equal(0);
@@ -56,7 +56,6 @@ describe.only('Day 15: oxygen system', function () {
 
   it('can draw the maze', function () {
     const maze = new Maze();
-    maze.walls = [ '0,1', '1,1', '2,1', '3,0' ];
     maze.walls = require('../day15-walls.js');
     maze.draw();
   });
@@ -94,5 +93,30 @@ describe.only('Day 15: oxygen system', function () {
    //     expect(report.length).to.equal(96);
    //   });
    // });
+  });
+
+  it('can spread the oxygen', function () {
+    const maze = new Maze([1,2]);
+    maze.walls = ['1,0', '2,0', '3,0',
+      '0,1', '4,1',
+      '0,2', '4,2',
+      '1,3', '2,3', '3,3'];
+    maze.draw();
+    expect(maze.spreadOxygen()).to.equal(2);
+    expect(maze.minutes).to.equal(1);
+    maze.draw();
+    expect(maze.spreadOxygen()).to.equal(2);
+    expect(maze.minutes).to.equal(2);
+    maze.draw();
+    expect(maze.spreadOxygen()).to.equal(1);
+  });
+
+  it('count minutes for oxygen spreading', function () {
+    const maze = new Maze();
+    maze.walls = require('../day15-walls.js');
+    while(maze.spreadOxygen() != 0) {
+      //maze.draw();
+    }
+    expect(maze.minutes - 1).to.equal(334);
   });
 });

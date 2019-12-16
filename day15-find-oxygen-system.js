@@ -2,11 +2,15 @@ const { Worker } = require('worker_threads');
 const fs = require('fs');
 
 class Maze {
-  constructor() {
+  constructor(oxygen = [16,-12]) {
     this.walls = [];
     this.stops = [];
     this.moves = [1, 4, 2, 3];
     this.restart();
+    this.oxygen = oxygen;
+    this.oxygens = [this.oxygen.toString()];
+    this.newOxygens = [this.oxygen.toString()];
+    this.minutes = 0;
   }
 
   restart () {
@@ -15,6 +19,36 @@ class Maze {
     this.foundOxygenSystem = false;
     this.visited = [];
     this.allMoves = [];
+  }
+
+  spreadOxygen() {
+    const localNewOxygens = [];
+    this.newOxygens.forEach(oxygen => {
+      const position = oxygen.split(',');
+      const x = parseInt(position[0]);
+      const y = parseInt(position[1]);
+      var adj = [x + 1, y];
+      if(!(this.isWall(adj) || this.isOxygen(adj)
+        || localNewOxygens.includes(`${adj}`) ))
+        localNewOxygens.push(`${adj}`);
+      adj = [x - 1, y];
+      if(!(this.isWall(adj) || this.isOxygen(adj)
+        || localNewOxygens.includes(`${adj}`) ))
+        localNewOxygens.push(`${adj}`);
+      adj = [x, y + 1];
+      if(!(this.isWall(adj) || this.isOxygen(adj)
+        || localNewOxygens.includes(`${adj}`) ))
+        localNewOxygens.push(`${adj}`);
+      adj = [x, y - 1];
+      if(!(this.isWall(adj) || this.isOxygen(adj)
+        || localNewOxygens.includes(`${adj}`) ))
+        localNewOxygens.push(`${adj}`);
+    });
+    this.newOxygens = localNewOxygens;
+    this.oxygens = this.oxygens.concat(this.newOxygens);
+    this.minutes++;
+    //console.log(this.newOxygens);
+    return this.newOxygens.length;
   }
 
   draw () {
@@ -54,7 +88,7 @@ class Maze {
         if(this.stops.includes(`${[c,r]}`)) {
           row[posX] = 'X';
         }
-        if(c == 16 && r == -12) {
+        if(this.oxygens.includes(`${[c,r]}`)) {
           row[posX] = 'O';
         }
         if(c == 0 && r == 0) {
@@ -71,6 +105,10 @@ class Maze {
 
   isWall ([x, y]) {
     return this.walls.includes(`${x},${y}`);
+  }
+
+  isOxygen ([x, y]) {
+    return this.oxygens.includes(`${x},${y}`);
   }
 
   isStops ([x, y]) {

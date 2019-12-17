@@ -58,6 +58,7 @@ async function compute (memory, stdin, stdout) {
 
     if(instruction == 99) {
       if (!isMainThread) {
+        stdout.emit('end');
         parentPort.postMessage(memory);
       }
       return memory;

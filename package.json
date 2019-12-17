@@ -4,6 +4,7 @@
   "description": "",
   "main": "gaz.js",
   "dependencies": {
+    "node-stopwatch": "0.0.1",
     "npm": "^6.13.4"
   },
   "devDependencies": {

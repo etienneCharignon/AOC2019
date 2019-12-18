@@ -1,56 +1,31 @@
-const { Maze } = require('./day15-find-oxygen-system');
-const repaireDroid = require('./day15-repaire-droid');
+const ascii = require('./day17-ascii');
 const { Worker } = require('worker_threads');
-
-const keys = ['z', 's', 'q', 'd'];
 
 process.stdin.setEncoding('utf8');
 process.stdout.setEncoding('utf8');
 
+ascii[0] = 2;
+const worker = new Worker('./computer.js', {
+  workerData: ascii,
+  stdin: true,
+  stdout: true
+});
+worker.stdout.setEncoding('utf8');
+process.stdin.on('data', data => {
+  const asciiChar = data.charCodeAt(0);
+  worker.stdin.write(`${asciiChar}\n`);
+});
 
-    const worker = new Worker('./computer.js', {
-      workerData: repaireDroid,
-      stdin: true,
-      stdout: true
-    });
-    worker.stdout.setEncoding('utf8');
-    const maze = new Maze();
-    process.stdin.on('data', data => {
-      const move = keys.indexOf(data[0]) + 1;
-      maze.setMove(move);
-      worker.stdin.write(`${move}\n`);
-    });
-    worker.stdout.on('data', (data) => {
-      maze.report(parseInt(data));
-      if(maze.foundOxygenSystem) {
-        console.log('trouvé');
-        worker.terminate();
-        resolve(maze.droidPosition);
-      }
-      maze.draw();
-    });
-    worker.on('message', () => {
-    });
+var line = '';
+worker.stdout.on('data', (data) => {
+  line += String.fromCharCode(parseInt(data));
+  if(data == 10) {
+    console.log(line);
+    line = '';
+  }
+});
+worker.on('message', () => {
+});
 
 
 
-
-
-// 
-// const { compute } = require('./computer.js');
-// compute(repaireDroid, process.stdin, process.stdout);
-// 
-// process.stdin.on('end', () => {
-//   process.stdout.write('end');
-// });
-// 
-// const maze = new Maze();
-// 
-// process.stdout.on('data', (data) => {
-//   maze.report(parseInt(data));
-//   maze.draw();
-//   if(maze.foundOxygenSystem) {
-//     console.log('trouvé');
-//     console.log(maze.droidPosition);
-//   }
-// });
